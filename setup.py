@@ -23,7 +23,8 @@ PACKAGES = [NAME.replace('-', '_')]
 REQUIREMENTS = [
     'setuptools',
     'six',
-    'Flask'
+    'Flask',
+    'simplekml'
 ]
 DEPENDENCY_LINKS = []
 ENTRY_POINTS = {

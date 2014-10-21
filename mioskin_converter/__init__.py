@@ -7,6 +7,7 @@ from flask import Flask, request, render_template, send_file
 from werkzeug import secure_filename
 
 import csv
+import simplekml
 
 app = Flask(__name__)
 
@@ -90,6 +91,30 @@ def export_for_mioskin(csv_input, **kwargs):
     return csv_output
 
 
+def export_to_kml(csv_input):
+    kml_file = simplekml.Kml()
+    csv_input = StringIO(csv_input.read().decode('utf-8'))
+    reader = csv.reader(csv_input, delimiter=',')
+
+    first_line = True
+    # POUR CHAQUE LIGNE EN ENTREE
+    for row in reader:
+        row = list(row)
+        if not first_line:
+            x = row[0]
+            y = row[1]
+            speed = row[3]
+            dirtype = row[4]
+            direction = row[5]
+
+            point_name = "Radar %sD%sa%s" % (dirtype, speed, direction)
+
+            kml_file.newpoint(name=point_name, coords=[(x, y)])
+
+        first_line = False
+    return StringIO(kml_file.kml())
+
+
 @app.route('/', methods=['GET'])
 def form(name=None):
     return render_template('form.html', name=name)
@@ -100,12 +125,22 @@ def upload_file():
     file = request.files['file']
     if file:
         filename = secure_filename(file.filename)
-        if request.form.get("csv", False):
-            filename += '.csv'
-        output = export_for_mioskin(file, **request.form)
+        mimetype = 'text/plain'
+
+        if request.form.get("kml", False):
+            filename += '.kml'
+            mimetype = 'application/vnd.google-earth.kml+xml'
+            output = export_to_kml(file)
+        else:
+            if request.form.get("csv", False):
+                filename += '.csv'
+                mimetype = 'text/csv'
+
+            output = export_for_mioskin(file, **request.form)
+
         return send_file(BytesIO(output.read().encode('utf-8')),
                          attachment_filename=filename,
-                         as_attachment=True, mimetype="text/csv")
+                         as_attachment=True, mimetype=mimetype)
 
 
 def main():
