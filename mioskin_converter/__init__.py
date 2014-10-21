@@ -71,11 +71,11 @@ def export_for_mioskin(csv_input, **kwargs):
 
             # ON CONSTRUIT LES NOUVELLES COLONNES POUR LA LIGNE
             if kwargs.get("mioskin", False):
-                result.append("%sD%sa%s" % (dirtype, direction, speed))
+                result.append("%sD%sa%s" % (dirtype, speed, direction))
 
             if kwargs.get("scdb", False):
                 result.append("%s-%sD%sa%s" % (radar_type, dirtype,
-                                               direction, speed))
+                                               speed, direction))
 
             if kwargs.get("hauteur", False):
                 result.append("H%sD%sa%s" % (speed, dirtype, direction))
