@@ -15,4 +15,4 @@ Use the Web interface:
 
     python3 server.py
 
-Then go to: http://localhost:5000
+Then go to: http://localhost:5000 you can also try the online version: http://manu.trunat.fr/
